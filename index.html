@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Yash Gupta's portfolio — Statistics & Machine Learning student at Carnegie Mellon University focused on AI."
+    />
+    <meta name="theme-color" content="#eae0d5" />
+    <title>Yash Gupta — Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #0a0908;
+        --slate: #22333b;
+        --cream: #eae0d5;
+        --sand: #c6ac8f;
+        --earth: #5e503f;
+        --surface: #f5eee7;
+        --line: rgba(34, 51, 59, 0.17);
+        --muted: #665f58;
+        --shadow: 0 20px 50px rgba(10, 9, 8, 0.1);
+        --radius: 22px;
+      }
+
+      [data-theme="dark"] {
+        --ink: #f6ede4;
+        --slate: #c6d3d8;
+        --cream: #0a0908;
+        --sand: #c6ac8f;
+        --earth: #d0b89d;
+        --surface: #161a1c;
+        --line: rgba(234, 224, 213, 0.17);
+        --muted: #b9afa6;
+        --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--cream);
+        font-family: "DM Sans", sans-serif;
+        line-height: 1.65;
+        transition: background 0.25s ease, color 0.25s ease;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.3;
+        background-image: radial-gradient(var(--earth) 0.5px, transparent 0.5px);
+        background-size: 18px 18px;
+        mask-image: linear-gradient(to bottom, black, transparent 55%);
+        z-index: -1;
+      }
+
+      a { color: inherit; }
+      button, input, textarea { font: inherit; }
+      button, a { -webkit-tap-highlight-color: transparent; }
+      h1, h2, h3, p { margin-top: 0; }
+      h1, h2, h3, .logo { font-family: "Manrope", sans-serif; }
+      section { scroll-margin-top: 92px; }
+      .container { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
+
+      .skip-link {
+        position: fixed; left: 16px; top: -60px; z-index: 100;
+        padding: 10px 16px; border-radius: 10px; background: var(--ink); color: var(--cream);
+      }
+      .skip-link:focus { top: 16px; }
+
+      header {
+        position: sticky; top: 0; z-index: 50;
+        border-bottom: 1px solid transparent;
+        background: color-mix(in srgb, var(--cream) 86%, transparent);
+        backdrop-filter: blur(16px);
+      }
+      header.scrolled { border-color: var(--line); }
+      nav { min-height: 76px; display: flex; align-items: center; justify-content: space-between; }
+      .logo { text-decoration: none; font-weight: 800; font-size: 1.12rem; letter-spacing: -0.04em; }
+      .logo span { color: var(--earth); }
+      .nav-links { display: flex; align-items: center; gap: 30px; }
+      .nav-links a { text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.92rem; }
+      .nav-links a:hover, .nav-links a:focus-visible { color: var(--ink); }
+      .icon-button {
+        width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 50%;
+        display: grid; place-items: center; cursor: pointer; color: var(--ink); background: var(--surface);
+      }
+      .theme-toggle svg { width: 18px; }
+      .moon-icon, [data-theme="dark"] .sun-icon { display: none; }
+      [data-theme="dark"] .moon-icon { display: block; }
+      .menu-button { display: none; }
+
+      .hero { min-height: calc(100vh - 76px); display: grid; align-items: center; padding: 82px 0 100px; }
+      .hero-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr); gap: 70px; align-items: center; }
+      .eyebrow {
+        display: flex; align-items: center; gap: 10px; color: var(--earth);
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+      }
+      .eyebrow::before { content: ""; width: 34px; height: 2px; background: var(--sand); }
+      h1 { max-width: 800px; margin-bottom: 24px; font-size: clamp(3.4rem, 8.4vw, 7.4rem); line-height: 0.96; letter-spacing: -0.075em; }
+      h1 span { color: var(--earth); }
+      .hero-copy { max-width: 640px; color: var(--muted); font-size: clamp(1.05rem, 2vw, 1.25rem); }
+      .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 36px; }
+      .button {
+        min-height: 50px; padding: 0 22px; border: 1px solid var(--ink); border-radius: 999px;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        background: var(--ink); color: var(--cream); text-decoration: none; font-weight: 700;
+        transition: transform 0.2s, background 0.2s;
+      }
+      .button:hover { transform: translateY(-2px); }
+      .button.secondary { color: var(--ink); background: transparent; border-color: var(--line); }
+      .portrait {
+        aspect-ratio: 4 / 5; padding: 18px; border: 1px solid var(--line); border-radius: 180px 180px var(--radius) var(--radius);
+        background: var(--sand); box-shadow: var(--shadow); transform: rotate(2deg);
+      }
+      .portrait-inner {
+        height: 100%; border: 1px dashed rgba(10, 9, 8, 0.34); border-radius: inherit;
+        display: grid; place-items: center; padding: 28px; text-align: center; color: #0a0908;
+      }
+      .portrait-inner strong { display: block; font: 800 clamp(4rem, 9vw, 7rem)/1 "Manrope"; letter-spacing: -0.08em; }
+      .portrait-inner small { max-width: 150px; font-weight: 600; }
+
+      .section { padding: 110px 0; border-top: 1px solid var(--line); }
+      .section-header { display: grid; grid-template-columns: 0.65fr 1.35fr; gap: 40px; margin-bottom: 54px; }
+      .section-number { color: var(--earth); font-weight: 700; letter-spacing: 0.12em; }
+      h2 { margin-bottom: 14px; font-size: clamp(2.3rem, 5vw, 4.7rem); line-height: 1; letter-spacing: -0.055em; }
+      .section-intro { max-width: 650px; color: var(--muted); font-size: 1.08rem; }
+
+      .about-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 60px; }
+      .about-story { font-size: 1.18rem; }
+      .about-story p:last-child { margin-bottom: 0; }
+      .details { display: grid; gap: 28px; }
+      .detail-block { padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+      .detail-block h3 { margin-bottom: 14px; font-size: 0.78rem; color: var(--earth); letter-spacing: 0.13em; text-transform: uppercase; }
+      .chips { display: flex; flex-wrap: wrap; gap: 9px; }
+      .chip { padding: 8px 13px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: 0.88rem; }
+
+      .projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+      .project-card {
+        min-height: 430px; padding: 28px; border: 1px solid var(--line); border-radius: var(--radius);
+        display: flex; flex-direction: column; background: var(--surface); box-shadow: 0 1px 0 rgba(10,9,8,.02);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+      }
+      .project-card:hover { transform: translateY(-7px); box-shadow: var(--shadow); }
+      .project-card.featured { background: var(--slate); color: var(--cream); }
+      [data-theme="dark"] .project-card.featured { color: #0a0908; }
+      .project-top { display: flex; justify-content: space-between; align-items: center; }
+      .project-index { opacity: 0.65; font-weight: 700; }
+      .arrow { font-size: 1.4rem; transition: transform 0.2s; }
+      .project-card:hover .arrow { transform: translate(3px, -3px); }
+      .project-card h3 { margin: auto 0 12px; font-size: 1.65rem; letter-spacing: -0.035em; }
+      .project-card p { color: var(--muted); }
+      .project-card.featured p { color: inherit; opacity: 0.74; }
+      .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+      .tags span { font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+      .highlights-grid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 20px; }
+      .highlight-card {
+        min-height: 390px; padding: clamp(28px, 4vw, 44px); border: 1px solid var(--line);
+        border-radius: var(--radius); display: flex; flex-direction: column; background: var(--surface);
+      }
+      .highlight-card.community { background: var(--sand); color: #0a0908; }
+      .highlight-label { margin-bottom: 56px; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase; }
+      .highlight-card h3 { margin-bottom: 14px; font-size: clamp(1.8rem, 3vw, 2.7rem); line-height: 1.05; letter-spacing: -0.045em; }
+      .highlight-card p { max-width: 620px; color: var(--muted); }
+      .highlight-card.community p { color: #413a31; }
+      .resource-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: auto; padding-top: 30px; }
+      .resource-link {
+        padding: 10px 14px; border: 1px solid currentColor; border-radius: 999px;
+        display: inline-flex; align-items: center; gap: 8px; color: inherit; text-decoration: none;
+        font-size: 0.85rem; font-weight: 700; transition: transform 0.2s, background 0.2s;
+      }
+      .resource-link:hover { transform: translateY(-2px); background: color-mix(in srgb, currentColor 8%, transparent); }
+
+      .contact-panel {
+        padding: clamp(30px, 6vw, 72px); border-radius: calc(var(--radius) + 8px); color: #eae0d5; background: #22333b;
+        display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 70px; box-shadow: var(--shadow);
+      }
+      .contact-panel h2 { max-width: 580px; }
+      .contact-panel p { color: #cbd2d3; }
+      .contact-links { display: grid; align-content: center; }
+      .contact-link { padding: 18px 0; border-bottom: 1px solid rgba(234,224,213,.2); display: flex; justify-content: space-between; text-decoration: none; }
+      .contact-link:hover span:last-child { transform: translateX(5px); }
+      .contact-link span:last-child { transition: transform 0.2s; }
+
+      footer { padding: 34px 0; color: var(--muted); font-size: 0.9rem; }
+      .footer-inner { display: flex; justify-content: space-between; gap: 20px; }
+
+      .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+      .reveal.visible { opacity: 1; transform: none; }
+      :focus-visible { outline: 3px solid var(--sand); outline-offset: 4px; }
+
+      @media (max-width: 840px) {
+        .menu-button { display: grid; }
+        .nav-links {
+          position: absolute; top: 76px; left: 20px; right: 20px; padding: 20px;
+          border: 1px solid var(--line); border-radius: 16px; align-items: stretch; flex-direction: column;
+          background: var(--surface); box-shadow: var(--shadow); opacity: 0; pointer-events: none; transform: translateY(-8px); transition: .2s;
+        }
+        .nav-links.open { opacity: 1; pointer-events: auto; transform: none; }
+        .nav-links .theme-toggle { align-self: center; }
+        .hero { min-height: auto; }
+        .hero-grid { grid-template-columns: 1fr; }
+        .portrait { width: min(380px, 88%); justify-self: center; }
+        .section-header, .about-grid, .contact-panel { grid-template-columns: 1fr; gap: 30px; }
+        .projects-grid, .highlights-grid { grid-template-columns: 1fr 1fr; }
+        .project-card:last-child { grid-column: 1 / -1; min-height: 300px; }
+      }
+
+      @media (max-width: 580px) {
+        .container { width: min(100% - 28px, 1120px); }
+        .hero { padding: 56px 0 80px; }
+        h1 { font-size: clamp(3rem, 17vw, 5rem); }
+        .section { padding: 80px 0; }
+        .projects-grid, .highlights-grid { grid-template-columns: 1fr; }
+        .project-card, .project-card:last-child { grid-column: auto; min-height: 340px; }
+        .footer-inner { flex-direction: column; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+        .reveal { opacity: 1; transform: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header id="site-header">
+      <nav class="container" aria-label="Main navigation">
+        <a class="logo" href="#home" aria-label="Yash Gupta homepage">YG<span>.</span></a>
+        <button class="icon-button menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+        </button>
+        <div class="nav-links">
+          <a href="#about">About</a>
+          <a href="research.html">Research</a>
+          <a href="projects.html">Projects</a>
+          <a href="contact.html">Contact</a>
+          <button class="icon-button theme-toggle" type="button" aria-label="Switch to dark theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.5 14.2A8.5 8.5 0 019.8 3.5a8.5 8.5 0 1010.7 10.7z"/></svg>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="home">
+        <div class="container hero-grid">
+          <div class="reveal">
+            <p class="eyebrow">Student · AI Enthusiast · Builder</p>
+            <h1>Hi, I’m <span>Yash Gupta.</span></h1>
+            <p class="hero-copy">I’m a Statistics &amp; Machine Learning student at Carnegie Mellon University with a focus on AI. This is where I share what I’m learning and building.</p>
+            <div class="hero-actions">
+              <a class="button" href="research.html">Explore my work <span aria-hidden="true">↗</span></a>
+              <a class="button secondary" href="mailto:ygupta3@andrew.cmu.edu">Email me</a>
+            </div>
+          </div>
+          <div class="portrait reveal" aria-label="Photo placeholder">
+            <div class="portrait-inner">
+              <div><strong>YG</strong><small>Replace this block with your favorite photo</small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="about">
+        <div class="container">
+          <div class="section-header reveal">
+            <p class="section-number">01 / ABOUT</p>
+            <div><h2>A little about me.</h2><p class="section-intro">Use this space to share your story, what motivates you, and the kind of opportunities you’re looking for.</p></div>
+          </div>
+          <div class="about-grid reveal">
+            <div class="about-story">
+              <p>I’m pursuing a <strong>B.S. in Statistics &amp; Machine Learning</strong> at <strong>Carnegie Mellon University</strong> in Pittsburgh, PA, with an expected graduation date of <strong>May 2029</strong>. I’m especially interested in artificial intelligence and how data can be used to solve meaningful problems.</p>
+              <p>Outside of class, I love playing racket sports—especially tennis, ping pong, and pickleball. I also enjoy poker, have recently started going to the gym, and like experimenting in the kitchen. I value curiosity, clear communication, and making things with purpose.</p>
+            </div>
+            <div class="details">
+              <div class="detail-block"><h3>Skills</h3><div class="chips"><span class="chip">HTML & CSS</span><span class="chip">JavaScript</span><span class="chip">Figma</span><span class="chip">Add yours +</span></div></div>
+              <div class="detail-block"><h3>Interests</h3><div class="chips"><span class="chip">Artificial Intelligence</span><span class="chip">Tennis</span><span class="chip">Ping Pong</span><span class="chip">Pickleball</span><span class="chip">Poker</span><span class="chip">Fitness</span><span class="chip">Cooking</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer><div class="container footer-inner"><span>© <span id="year"></span> Yash Gupta</span><span>Designed with curiosity & care.</span></div></footer>
+
+    <script>
+      const root = document.documentElement;
+      const themeButton = document.querySelector('.theme-toggle');
+      const menuButton = document.querySelector('.menu-button');
+      const navLinks = document.querySelector('.nav-links');
+      const savedTheme = localStorage.getItem('portfolio-theme');
+
+      if (savedTheme) root.dataset.theme = savedTheme;
+      else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+
+      function updateThemeLabel() {
+        themeButton.setAttribute('aria-label', `Switch to ${root.dataset.theme === 'dark' ? 'light' : 'dark'} theme`);
+        document.querySelector('meta[name="theme-color"]').content = root.dataset.theme === 'dark' ? '#0a0908' : '#eae0d5';
+      }
+      updateThemeLabel();
+
+      themeButton.addEventListener('click', () => {
+        root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        localStorage.setItem('portfolio-theme', root.dataset.theme);
+        updateThemeLabel();
+      });
+
+      menuButton.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        menuButton.setAttribute('aria-expanded', isOpen);
+        menuButton.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+      });
+      document.querySelectorAll('.nav-links a').forEach(link => link.addEventListener('click', () => {
+        navLinks.classList.remove('open');
+        menuButton.setAttribute('aria-expanded', 'false');
+      }));
+
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
+      addEventListener('scroll', () => document.querySelector('#site-header').classList.toggle('scrolled', scrollY > 8), { passive: true });
+      document.querySelector('#year').textContent = new Date().getFullYear();
+    </script>
+  </body>
+</html>
