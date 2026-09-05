@@ -1,0 +1,53 @@
+Updated [index.html](/Users/yashgupta/Documents/GitHub/github.io/index.html) with:
+- Yash Gupta and YG initials
+- Carnegie Mellon University in Pittsburgh
+- B.S. in Statistics & Machine Learning
+- AI focus
+- May 2029 graduation
+- Tennis, ping pong, pickleball, poker, fitness, and cooking interests
+Refresh http://localhost:8000 to view the updated portfolio. Project, photo, skill, and contact placeholders remain for future personalization.
+
+Research:
+https://ieeexplore.ieee.org/document/10937526/keywords#keywords
+Community Service:
+https://www.nj.com/highschoolsports/2024/05/tennis-everyone-nj-hs-tennis-twins-have-repaired-donated-racquets-for-non-profits.html
+https://www.usta.com/en/home/stay-current/eastern/2023-usta-eastern-family-of-the-year--the-gupta-family.html#tab=tournaments
+https://www.newjerseyhills.com/print\_only/headline\_style/bold\_54/gupta-twins-motto-tennis-everyone/article\_d4216faa-19aa-11ee-becb-8f407e84b25f.html
+contact me:
+ygupta3@andrew.cmu.edu
+linkedin:
+https://www.linkedin.com/in/yash-gupta-ab9985290/
+
+Updated [index.html](/Users/yashgupta/Documents/GitHub/github.io/index.html) with:
+- A new Highlights navigation tab and section
+- An IEEE research card linking to your publication
+- A Tennis Everyone community-service card with all three articles
+- Your family’s 2023 USTA Eastern Family of the Year recognition, verified through USTA Eastern
+- Your CMU email throughout the site
+- Your actual LinkedIn profile
+- Removal of the unfinished GitHub link
+
+The portfolio now uses separate pages:
+- About/Home: index.html
+- Research: research.html
+- Projects: projects.html
+- Contact: contact.html
+Contact includes your email, LinkedIn, and GitHub. Projects now clearly says new work is coming soon. Research contains the IEEE publication and community-service coverage.
+
+In my experience tab I have the places I wored, help me put the logo next to them. this is the logo for arch capital
+
+Done — the Arch Capital logo now sits next to the company name in the Professional Experience section.
+
+What I changed:
+
+I couldn't extract the exact pasted image as a file, so I redrew the logo as a small SVG at assets/logos/arch-capital.svg (black square, white arch/mountain mark), which renders crisply at any size.
+Updated the Arch Capital row in experience.html:10 to include the logo image, wrapped in a new .exp-text div.
+Added .exp-logo/flex styles in pages.css so the logo sits inline with the name; other rows (Delphi, AWS, etc.) are unaffected since they don't include a logo.
+
+  ll three files are already saved in the project. Now let's update experience.html to give Delphi and AWS the same logo-left layout as Arch Capital, and check index.html for the placeholder photo.
+
+  Experience page — Delphi Markets and AWS now use the same logo-left / text-right layout as Arch Capital, with consistent spacing between rows (existing row padding + divider handles the "space below" you asked for).
+
+Home page — I pointed the portrait at your photo (assets/profile.jpg), and had to fix a real bug: index.html uses its own inline <style> block rather than pages.css, so the .avatar-photo sizing rule that made images fit the arch frame didn't exist there — the photo was rendering at full native size and blowing out of its container. I added that rule (with object-position: top so the crop favors your face over the bottom of the frame).
+
+  
