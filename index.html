@@ -27,6 +27,8 @@
         --muted: #665f58;
         --shadow: 0 20px 50px rgba(10, 9, 8, 0.1);
         --radius: 22px;
+        --glow-color: rgba(198, 172, 143, 0.4);
+        --glow-blend: multiply;
       }
 
       [data-theme="dark"] {
@@ -39,7 +41,18 @@
         --line: rgba(234, 224, 213, 0.17);
         --muted: #b9afa6;
         --shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+        --glow-color: rgba(94, 234, 212, 0.28);
+        --glow-blend: screen;
       }
+
+      .cursor-glow {
+        position: fixed; top: 0; left: 0; width: 480px; height: 480px; border-radius: 50%;
+        pointer-events: none; z-index: 40; will-change: transform;
+        background: radial-gradient(circle closest-side, var(--glow-color), transparent 72%);
+        mix-blend-mode: var(--glow-blend); opacity: 0; transition: opacity 0.4s ease;
+      }
+      .cursor-glow.active { opacity: 1; }
+      @media (pointer: coarse), (prefers-reduced-motion: reduce) { .cursor-glow { display: none; } }
 
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
@@ -126,9 +139,11 @@
       .portrait-inner {
         height: 100%; border: 1px dashed rgba(10, 9, 8, 0.34); border-radius: inherit;
         display: grid; place-items: center; padding: 28px; text-align: center; color: #0a0908;
+        position: relative; overflow: hidden;
       }
       .portrait-inner strong { display: block; font: 800 clamp(4rem, 9vw, 7rem)/1 "Manrope"; letter-spacing: -0.08em; }
       .portrait-inner small { max-width: 150px; font-weight: 600; }
+      .avatar-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: inherit; }
 
       .section { padding: 110px 0; border-top: 1px solid var(--line); }
       .section-header { display: grid; grid-template-columns: 0.65fr 1.35fr; gap: 40px; margin-bottom: 54px; }
@@ -195,6 +210,8 @@
 
       footer { padding: 34px 0; color: var(--muted); font-size: 0.9rem; }
       .footer-inner { display: flex; justify-content: space-between; gap: 20px; }
+      .footer-credits { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 0.78rem; color: var(--muted); opacity: 0.85; }
+      .footer-credits a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 
       .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
       .reveal.visible { opacity: 1; transform: none; }
@@ -243,6 +260,7 @@
         </button>
         <div class="nav-links">
           <a href="#about">About</a>
+          <a href="experience.html">Experience</a>
           <a href="research.html">Research</a>
           <a href="projects.html">Projects</a>
           <a href="contact.html">Contact</a>
@@ -258,7 +276,6 @@
       <section class="hero" id="home">
         <div class="container hero-grid">
           <div class="reveal">
-            <p class="eyebrow">Student · AI Enthusiast · Builder</p>
             <h1>Hi, I’m <span>Yash Gupta.</span></h1>
             <p class="hero-copy">I’m a Statistics &amp; Machine Learning student at Carnegie Mellon University with a focus on AI. This is where I share what I’m learning and building.</p>
             <div class="hero-actions">
@@ -266,9 +283,9 @@
               <a class="button secondary" href="mailto:ygupta3@andrew.cmu.edu">Email me</a>
             </div>
           </div>
-          <div class="portrait reveal" aria-label="Photo placeholder">
-            <div class="portrait-inner">
-              <div><strong>YG</strong><small>Replace this block with your favorite photo</small></div>
+          <div class="portrait reveal" aria-label="Photo of Yash Gupta">
+            <div class="portrait-inner" id="portrait-inner">
+              <img class="avatar-photo" src="assets/profile.jpg" alt="Yash Gupta" onerror="this.closest('.portrait-inner').innerHTML='&lt;div&gt;&lt;strong&gt;YG&lt;/strong&gt;&lt;small&gt;Add assets/profile.jpg to show your photo&lt;/small&gt;&lt;/div&gt;'">
             </div>
           </div>
         </div>
@@ -278,15 +295,15 @@
         <div class="container">
           <div class="section-header reveal">
             <p class="section-number">01 / ABOUT</p>
-            <div><h2>A little about me.</h2><p class="section-intro">Use this space to share your story, what motivates you, and the kind of opportunities you’re looking for.</p></div>
+            <div><h2>A little about me.</h2><p class="section-intro">.</p></div>
           </div>
           <div class="about-grid reveal">
             <div class="about-story">
               <p>I’m pursuing a <strong>B.S. in Statistics &amp; Machine Learning</strong> at <strong>Carnegie Mellon University</strong> in Pittsburgh, PA, with an expected graduation date of <strong>May 2029</strong>. I’m especially interested in artificial intelligence and how data can be used to solve meaningful problems.</p>
-              <p>Outside of class, I love playing racket sports—especially tennis, ping pong, and pickleball. I also enjoy poker, have recently started going to the gym, and like experimenting in the kitchen. I value curiosity, clear communication, and making things with purpose.</p>
+              <p>Outside of class, I love playing racket sports, especially tennis, ping pong, and pickleball. I also enjoy poker, have recently started going to the gym, and like experimenting in the kitchen.</p>
             </div>
             <div class="details">
-              <div class="detail-block"><h3>Skills</h3><div class="chips"><span class="chip">HTML & CSS</span><span class="chip">JavaScript</span><span class="chip">Figma</span><span class="chip">Add yours +</span></div></div>
+              <div class="detail-block"><h3>Skills</h3><div class="chips"><span class="chip">Python</span><span class="chip">Excel</span><span class="chip">SQL</span>
               <div class="detail-block"><h3>Interests</h3><div class="chips"><span class="chip">Artificial Intelligence</span><span class="chip">Tennis</span><span class="chip">Ping Pong</span><span class="chip">Pickleball</span><span class="chip">Poker</span><span class="chip">Fitness</span><span class="chip">Cooking</span></div></div>
             </div>
           </div>
@@ -295,7 +312,7 @@
 
     </main>
 
-    <footer><div class="container footer-inner"><span>© <span id="year"></span> Yash Gupta</span><span>Designed with curiosity & care.</span></div></footer>
+    <footer><div class="container"><div class="footer-inner"><span>© <span id="year"></span> Yash Gupta</span><span></span></div><p class="footer-credits">Typeset in <a href="https://fonts.google.com/specimen/DM+Sans" target="_blank" rel="noreferrer">DM Sans</a> &amp; <a href="https://fonts.google.com/specimen/Manrope" target="_blank" rel="noreferrer">Manrope</a>, served via <a href="https://fonts.google.com/" target="_blank" rel="noreferrer">Google Fonts</a> (SIL Open Font License).</p></div></footer>
 
     <script>
       const root = document.documentElement;
@@ -335,6 +352,20 @@
       document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
       addEventListener('scroll', () => document.querySelector('#site-header').classList.toggle('scrolled', scrollY > 8), { passive: true });
       document.querySelector('#year').textContent = new Date().getFullYear();
+
+      if (!matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const glow = document.createElement('div');
+        glow.className = 'cursor-glow';
+        document.body.appendChild(glow);
+        let gx = 0, gy = 0, raf = null;
+        const move = () => { glow.style.transform = `translate3d(${gx}px, ${gy}px, 0) translate(-50%, -50%)`; raf = null; };
+        addEventListener('pointermove', e => {
+          gx = e.clientX; gy = e.clientY;
+          glow.classList.add('active');
+          if (!raf) raf = requestAnimationFrame(move);
+        }, { passive: true });
+        addEventListener('mouseleave', () => glow.classList.remove('active'));
+      }
     </script>
   </body>
 </html>

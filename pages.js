@@ -5,3 +5,13 @@ function updateTheme(){themeButton.setAttribute('aria-label',`Switch to ${root.d
 updateTheme();themeButton.addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('portfolio-theme',root.dataset.theme);updateTheme()});
 menuButton.addEventListener('click',()=>{const open=navLinks.classList.toggle('open');menuButton.setAttribute('aria-expanded',open);menuButton.setAttribute('aria-label',open?'Close menu':'Open menu')});
 document.querySelector('#year').textContent=new Date().getFullYear();
+
+if(!matchMedia('(pointer: coarse)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+  const glow=document.createElement('div');
+  glow.className='cursor-glow';
+  document.body.appendChild(glow);
+  let gx=0,gy=0,raf=null;
+  const move=()=>{glow.style.transform=`translate3d(${gx}px, ${gy}px, 0) translate(-50%, -50%)`;raf=null};
+  addEventListener('pointermove',e=>{gx=e.clientX;gy=e.clientY;glow.classList.add('active');if(!raf)raf=requestAnimationFrame(move)},{passive:true});
+  addEventListener('mouseleave',()=>glow.classList.remove('active'));
+}
