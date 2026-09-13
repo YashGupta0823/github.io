@@ -1,12 +1,52 @@
-<!doctype html>
-<html lang="en" data-theme="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="Contact Yash Gupta." />
-    <meta name="theme-color" content="#eae0d5" />
-    <title>Contact — Yash Gupta</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?fa
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Campus Commute</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <div id="hud">
+      <span id="score">Score: 0</span>
+      <span id="bonus">Bonus: +0</span>
+      <span id="best">Best: 0</span>
+    </div>
+
+    <div id="canvas-wrap">
+      <canvas id="game-canvas" width="840" height="600"></canvas>
+
+      <div id="start-screen" class="overlay-screen">
+        <h1 class="overlay-title">Campus Commute</h1>
+        <p class="overlay-subtitle">Dodge traffic, ride the current, and collect loose cash on your way to class.</p>
+
+        <div class="controls-hint">
+          <div class="key-row">
+            <kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&larr;</kbd><kbd>&rarr;</kbd>
+            <span class="key-or">or</span>
+            <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+          </div>
+          <p class="key-caption">to move</p>
+        </div>
+
+        <p class="overlay-best">Best: <span id="start-best-score">0</span></p>
+
+        <button id="start-button" class="primary-button">Start</button>
+      </div>
+
+      <div id="game-over-screen" class="overlay-screen hidden">
+        <h1 class="overlay-title overlay-title--danger">Game Over</h1>
+        <p id="final-score" class="overlay-score">Score: 0</p>
+        <p id="final-breakdown" class="overlay-breakdown">Distance 0 + Bonus 0</p>
+        <p class="overlay-best">Best: <span id="final-best-score">0</span></p>
+        <button id="restart-button" class="primary-button">Restart</button>
+      </div>
+    </div>
+
+    <p id="instructions">Arrow Keys / WASD to Move</p>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

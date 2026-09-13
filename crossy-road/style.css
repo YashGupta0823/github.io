@@ -1,0 +1,199 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 20%, #3a3a5c 0%, #1c1c2e 70%);
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  color: #fff;
+}
+
+#game-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#hud {
+  width: 840px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+#hud span {
+  background: #2d2d44;
+  padding: 6px 16px;
+  border-radius: 8px;
+  border-bottom: 3px solid #14141f;
+}
+
+#score {
+  color: #ffd93d;
+}
+
+#bonus {
+  color: #7be07b;
+  font-size: 18px;
+}
+
+#best {
+  color: #6ab7ff;
+}
+
+#canvas-wrap {
+  position: relative;
+}
+
+#game-canvas {
+  background: #7ed1f5;
+  border: 6px solid #14141f;
+  border-radius: 10px;
+  display: block;
+  box-shadow: 0 10px 0 rgba(0, 0, 0, 0.35), 0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
+#instructions {
+  max-width: 600px;
+  text-align: center;
+  font-size: 13px;
+  color: #b8b8d0;
+}
+
+/* Shared full-canvas overlay panel used by both the start and game-over screens */
+.overlay-screen {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  border-radius: 6px;
+  background: rgba(10, 10, 20, 0.82);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+.overlay-screen.hidden {
+  display: none;
+}
+
+.overlay-title {
+  margin: 0;
+  font-size: 42px;
+  color: #ffd93d;
+  text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
+}
+
+.overlay-title--danger {
+  color: #ff5c5c;
+}
+
+.overlay-subtitle {
+  max-width: 440px;
+  margin: 0;
+  font-size: 14px;
+  color: #d6d6ea;
+}
+
+.overlay-score {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  color: #ffd93d;
+}
+
+.overlay-breakdown {
+  margin: 0;
+  font-size: 13px;
+  color: #b8b8d0;
+}
+
+.overlay-best {
+  margin: 0;
+  font-size: 15px;
+  color: #6ab7ff;
+  font-weight: bold;
+}
+
+.controls-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.key-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.key-row kbd {
+  min-width: 22px;
+  padding: 5px 7px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  color: #1c1c2e;
+  background: #e8e8f0;
+  border-radius: 5px;
+  border-bottom: 3px solid #a0a0b8;
+}
+
+.key-or {
+  margin: 0 4px;
+  font-size: 12px;
+  color: #9090a8;
+}
+
+.key-caption {
+  margin: 0;
+  font-size: 12px;
+  color: #9090a8;
+}
+
+.primary-button {
+  padding: 12px 32px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  background: #ff5c5c;
+  color: #fff;
+  border-bottom: 4px solid #a83232;
+  transition: transform 0.05s ease;
+}
+
+.primary-button:hover {
+  background: #ff7777;
+}
+
+.primary-button:active {
+  transform: translateY(3px);
+  border-bottom-width: 1px;
+}
+
+#start-button {
+  background: #4caf6e;
+  border-bottom-color: #2d7a48;
+}
+
+#start-button:hover {
+  background: #5cc47e;
+}
