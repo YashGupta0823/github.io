@@ -1,0 +1,89 @@
+I’m building a browser based JavaScript game inspired by Crossy Road for a class assignment.
+
+For this first step, prioritize functionality over visuals. Build a simple playable version with:
+a player character on a grid
+arrow key or WASD movement one tile at a time
+multiple horizontal road lanes
+cars moving left or right at different speeds
+collision detection that ends the run if a car hits the player
+a score that increases based on the furthest forward distance reached
+a game over screen
+a restart button or key
+
+
+
+Before changing the visuals, improve the gameplay mechanics.
+
+Please make movement feel responsive but still grid based
+prevent the player from moving outside the playable area
+make lanes generate with varied car speeds and directions
+make collisions accurate
+make the score only increase when the player reaches a new furthest row
+add a clear start state before the first move
+make restarting fully reset the player, cars, score, and game state
+make sure the game does not throw console errors
+
+
+Transform the current flat presentation into a chunky pseudo-3D / 2.5D style while keeping the existing gameplay logic working.
+
+I want an isometric like camera angle where the player appears to look diagonally across the lanes
+chunky rectangular cars
+a blocky player character
+roads and grass rendered as thick tiles with visible depth
+shadows and simple lighting that create depth
+a bright arcade aesthetic
+a camera that visually follows the player as they advance
+
+
+The 2.5D look is in place. Now improve the player movement so it feels more like Crossy Road.
+
+Instead of instantly teleporting from tile to tile animate each hop over a short duration
+give the character a small vertical bounce during the hop
+prevent another move from starting until the current hop is mostly complete
+rotate or visually orient the character toward the direction of movement if practical
+keep collision detection reliable during and after movement
+
+Add river sections to the game in addition to road and grass lanes.
+river lanes should visually contain water
+moving logs should travel horizontally
+the player can safely stand on a log
+while standing on a log, the player should move horizontally with it
+falling into water should cause game over
+if a log carries the player completely off the playable area, that should also end the run
+alternate between road, grass, and river sections so the level has variety
+
+
+generate new lanes ahead of the player
+remove lanes that are far behind the camera to avoid performance issues
+randomly choose among safe grass lanes, road lanes, and river lanes
+avoid creating obviously impossible sections
+gradually increase difficulty by increasing traffic speed, density, or hazard frequency as score increases
+preserve the player's furthest distance scoring system
+
+use different vehicle types such as taxis, delivery vans, and buses
+add occasional collectible coins or dollar symbols that give bonus points
+keep the environment visually clean and polished rather than overly gimmicky
+Add collectibles carefully as they should appear on some safe or hazardous lanes
+collecting one adds bonus points
+they should not replace the main distance-based score
+
+Please add a clean title/start screen
+a short controls explanation
+current score
+high score using localStorage
+collectible/bonus score if applicable
+a clear gameover overlay
+a restart button 
+instructions like "Arrow Keys / WASD to Move"
+
+
+Please improve the rendering by giving every terrain tile visible thickness/depth along its lower edges
+adding stronger but clean directional shadows under the player, cars, logs, trees, and other objects
+making vehicles look like actual chunky low poly vehicles instead of simple rectangular boxes, with a body, roof/cabin, windshield, and wheels suggested through block shapes
+making logs cylindrical looking or more dimensional using simple block shading
+adding depth and shading to grass, roads, and water
+keeping the current camera angle but exaggerating the pseudo-3D perspective slightly
+improving object scale so the player and obstacles read clearly at a glance
+
+The gameplay is good, so do NOT change the controls, scoring, collisions, procedural generation logic, or game mechanics unless absolutely necessary for rendering.
+Right now the game has the correct isometric concept, but it still looks too much like a flat isometric simulation with many thin parallel lanes. I want the overall visual feel to move much closer to the chunky toylike 3D presentation of Crossy Road.
