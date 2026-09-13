@@ -1,6 +1,5 @@
-A crossy road game with a student walking across town, dodging traffic and rivers, grabbing cash along
-the way. Built with plain HTML, CSS, and JavaScript. Made for a class assignment and designed to run directly on GitHub
-Pages.
+A crossy road game with a figure walking across town, dodging traffic and rivers. It's different from stock crossy road
+as there random chances to grab cash which give you an additional bonus score. 
 
 How to Play
 - From the start screen, just press a movement key to jump in.
@@ -11,14 +10,6 @@ How to Play
 - Grab the coins that occasionally show up on any lane for bonus points
 - On game over, press R to play again.
 
+AI Model and Tools: I used Claude Code with Anthropics sonnet model to develop and iterate on the game.
 
-Scope
-- one tile per key press
-- Generated horizontal lanes of grass, road (traffic), and river (logs) that
-  alternate for variety
-- Collision detection ending the run (vehicles, drowning in water, or riding a log off the map)
-- Distance based scoring with a best score, plus a separate bonus score from collectible coins 
-- A start screen and a game over overlay
-- grass lane gets its own small fixed hue/lightness tint instead
-  of one repeating flat green/roads are randomly wider for astheics
-
+Strategy: I built the game incrementally, starting with the core movement, then lanes and collisions, scoring, then finally refining the 2.5D visuals, environment, animations, and overall UI polish through follow up prompts.
