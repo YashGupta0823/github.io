@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NBA Stat Baller</title>
+<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-ball" aria-hidden="true">🏀</div>
+  <h1>NBA STAT BALLER</h1>
+  <p class="tagline">Search a player. Pick a season. Get the box score.</p>
+</header>
+
+<main class="court">
+  <div id="game-banner" class="game-banner hidden"></div>
+
+  <section id="step-search" class="panel">
+    <h2><span class="step-badge">1</span> <span id="search-heading-text">Tip-Off — Find Your Player</span></h2>
+    <form id="search-form" class="row">
+      <input id="search-input" type="text" placeholder="e.g. Curry, LeBron James" autocomplete="off" />
+      <button type="submit">Search</button>
+    </form>
+    <div id="search-results" class="card-grid"></div>
+  </section>
+
+  <section id="step-season" class="panel hidden">
+    <h2><span class="step-badge">2</span> <span id="season-heading-text">Starting Lineup</span> — <span id="selected-player-name"></span></h2>
+    <form id="season-form" class="row">
+      <label for="season-input">Season start year</label>
+      <input id="season-input" type="number" min="1946" max="2100" placeholder="e.g. 2023" />
+      <button type="submit">Get Box Score</button>
+    </form>
+    <button type="button" class="link-btn" id="back-to-search">&larr; Search a different player</button>
+  </section>
+
+  <section id="step-stats" class="panel hidden">
+    <h2><span class="step-badge">3</span> Box Score</h2>
+    <div id="stats-content"></div>
+
+    <div id="game-cta" class="hidden">
+      <button type="button" id="play-game-btn">🏀 Play Game</button>
+    </div>
+    <div id="game-instructions" class="game-instructions hidden">
+      🎯 <strong>Goal:</strong> Click one of this player's stats above to
+      pick your challenge. Then find another player — if their stat in
+      that same category is higher, you win!
+    </div>
+
+    <button type="button" class="link-btn" id="play-again">&larr; Look up another player</button>
+  </section>
+
+  <section id="step-result" class="panel hidden">
+    <h2><span class="step-badge">🏆</span> Result</h2>
+    <div id="result-content"></div>
+    <button type="button" class="link-btn" id="restart-game-btn">🔄 Play Again</button>
+  </section>
+
+  <div id="loading" class="loading hidden">
+    <div class="spinner" aria-hidden="true">🏀</div>
+    <p>Fetching stats&hellip;</p>
+  </div>
+
+  <div id="error-banner" class="error-banner hidden" role="alert"></div>
+</main>
+
+<footer>
+  <p>Data via <a href="https://github.com/swar/nba_api" target="_blank" rel="noopener">nba_api</a> / stats.nba.com</p>
+</footer>
+
+<script src="/script.js"></script>
+</body>
+</html>
