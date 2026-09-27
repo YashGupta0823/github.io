@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:5051"; // placeholder, I'll update this after deploying
+const API_BASE = "https://chat-with-yash.onrender.com";
 
 const chatLog = document.getElementById("chat-log");
 const chatForm = document.getElementById("chat-form");
