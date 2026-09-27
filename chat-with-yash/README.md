@@ -1,10 +1,9 @@
 A Flask API that runs the "Chat With Me" chatbot on my portfolio. It answers
 questions using only real facts about my background (school, experience,
 projects) with the Gemini API.
-
-Frontend 
-The  frontend hosted on GitHub Pages keeps the full conversation in a JS array and calls `POST /api/chat` on every message the user
-sends, and passing the whole message history each time. It renders the returned `reply` in the chat window, or shows the `error` message
+ 
+The  frontend keeps the full conversation in a array and calls POST /api/chat on every message the user
+sends, and passing the whole message history each time. It renders the returned reply in the chat window, or shows the error message
 if the request fails.
 
 ```bash
