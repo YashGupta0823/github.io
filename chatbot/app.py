@@ -1,7 +1,7 @@
 """
 Flask API for "Chat With Yash" — a small chatbot that answers questions
 about Yash Gupta (background, experience, projects) in his own voice,
-backed by the OpenAI API.
+backed by the Gemini API.
 
 Run with:  python3 app.py
 Then open: http://127.0.0.1:5051
@@ -11,9 +11,10 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
-MODEL = "gpt-4o-mini"
+MODEL = "gemini-flash-latest"
 MAX_TOKENS = 500
 MAX_MESSAGES = 30
 MAX_MESSAGE_LENGTH = 2000
@@ -66,7 +67,7 @@ politely deflect and steer the conversation back to something you can actually \
 talk about."""
 
 app = Flask(__name__)
-client = OpenAI()
+client = genai.Client()
 
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
 CORS(app, resources={r"/api/chat": {"origins": ALLOWED_ORIGIN}})
@@ -99,17 +100,28 @@ def api_chat():
         if len(msg["content"]) > MAX_MESSAGE_LENGTH:
             return jsonify({"error": f"Messages must be under {MAX_MESSAGE_LENGTH} characters."}), 400
 
+    contents = [
+        types.Content(
+            role="model" if msg["role"] == "assistant" else "user",
+            parts=[types.Part(text=msg["content"])],
+        )
+        for msg in messages
+    ]
+
     try:
-        response = client.chat.completions.create(
+        response = client.models.generate_content(
             model=MODEL,
-            max_tokens=MAX_TOKENS,
-            messages=[{"role": "system", "content": SYSTEM_PROMPT}, *messages],
+            contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                max_output_tokens=MAX_TOKENS,
+            ),
         )
     except Exception:
         app.logger.exception("Chat API call failed")
         return jsonify({"error": "Could not reach the chat service right now. Please try again in a moment."}), 502
 
-    reply = response.choices[0].message.content if response.choices else ""
+    reply = response.text or ""
     return jsonify({"reply": reply})
 
 
@@ -129,4 +141,4 @@ def server_error(_exc):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5051)
+    app.run(debug=True, port=5051, use_reloader=False)

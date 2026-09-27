@@ -60,3 +60,36 @@ for process-transparency, matching the other projects in this portfolio.
   OpenAI/`OPENAI_API_KEY` instead of Anthropic/`ANTHROPIC_API_KEY`, changed
   the run instruction to `python3 app.py`, and added a troubleshooting note
   about clearing a leftover process on port 5051 with `lsof`/`kill`.
+
+**Follow-up prompt:**
+> Switch the chatbot backend from the OpenAI SDK to Google's Gemini API,
+> because the OpenAI account tied to that key had no usable credits
+> (`insufficient_quota` / `credit_balance_exhausted`) and Gemini's free tier
+> avoids that entirely — then verify it actually works end-to-end.
+
+**What Claude did:**
+- Swapped `openai.OpenAI()` for `google.genai.Client()` (reads
+  `GEMINI_API_KEY` from the environment automatically), and rebuilt the API
+  call around `client.models.generate_content(model=..., contents=...,
+  config=...)`. The system prompt now goes through
+  `types.GenerateContentConfig(system_instruction=..., max_output_tokens=...)`
+  instead of being injected as a message, and incoming messages are converted
+  to `types.Content(role=..., parts=[types.Part(text=...)])`, mapping
+  `"assistant"` → `"model"` (Gemini's name for that role) and leaving `"user"`
+  as-is — verified against the installed `google-genai` package's own
+  `types.Content`/`types.Part` fields rather than assumed.
+- Tried `gemini-2.5-flash` first as instructed; it's been retired for new
+  users (`404 NOT_FOUND`, "no longer available to new users"). The API's own
+  error pointed at `gemini-3.8-flash`, but that model returned a `503`
+  (overloaded) on one live test and an empty response on another. Settled on
+  `gemini-flash-latest` — the alias Google keeps pointed at its current
+  recommended Flash model — after 3/3 live test calls came back with real
+  text and a clean `STOP` finish reason.
+- Kept `app.logger.exception("Chat API call failed")` before the generic 502,
+  and left input validation, rate limiting, and CORS untouched.
+- Updated `requirements.txt` (`google-genai` in place of `openai`),
+  `.env.example` (`GEMINI_API_KEY`), and `README.md` (Gemini references, plus
+  a note that its free tier needs no credit card).
+- Verified live end-to-end: started the server, confirmed `GET /`, then sent
+  a real message to `POST /api/chat` and got back an actual in-character
+  reply from Gemini before committing.

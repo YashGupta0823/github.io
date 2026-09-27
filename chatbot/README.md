@@ -3,7 +3,8 @@
 A small Flask API that powers the "Chat With Me" chatbot on the portfolio site.
 It answers questions in Yash's voice — first person, friendly, and built only
 from the real facts on his site (school, experience, projects, hobbies) — using
-the [OpenAI API](https://platform.openai.com/docs/).
+the [Gemini API](https://ai.google.dev/gemini-api/docs). Gemini's free tier
+needs no credit card, unlike some other providers.
 
 ## How it works
 
@@ -12,13 +13,13 @@ the [OpenAI API](https://platform.openai.com/docs/).
   - `POST /api/chat` — takes the full conversation so far as
     `{"messages": [{"role": "user"|"assistant", "content": "..."}]}`, validates
     it (non-empty list, at most 30 messages, each under 2000 characters), sends
-    it to OpenAI (`gpt-4o-mini`) alongside a system prompt built from Yash's
-    real background, and returns `{"reply": "..."}`.
+    it to Gemini (`gemini-flash-latest`) alongside a system prompt built from
+    Yash's real background, and returns `{"reply": "..."}`.
   - Rate limited to 15 requests per minute per IP (via `flask-limiter`), with a
     friendly JSON 429 if that's exceeded.
   - CORS is enabled only on `/api/chat`, restricted to
     `https://yashgupta0823.github.io`.
-  - OpenAI API failures are caught, logged server-side (via
+  - Gemini API failures are caught, logged server-side (via
     `app.logger.exception`) so the real cause shows up in the terminal, and
     returned to the client as a clean, vague JSON error with a 502 status
     instead of a raw traceback.
@@ -35,13 +36,14 @@ the [OpenAI API](https://platform.openai.com/docs/).
    ```
 
 2. **Set your API key.** Copy `.env.example` to `.env` and fill in a real key,
-   or just export it in your shell:
+   or just export it in your shell. Get a free key (no credit card required)
+   at [aistudio.google.com/apikey](https://aistudio.google.com/apikey):
 
    ```bash
-   export OPENAI_API_KEY=your-key-here
+   export GEMINI_API_KEY=your-key-here
    ```
 
-   The app reads `OPENAI_API_KEY` from the environment automatically — the
+   The app reads `GEMINI_API_KEY` from the environment automatically — the
    key is never hardcoded anywhere in the code.
 
 ## Running it
