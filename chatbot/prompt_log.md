@@ -38,3 +38,25 @@ for process-transparency, matching the other projects in this portfolio.
 - Added a new "Chat With Me" project card to `projects.html` (numbered `03`,
   matching the existing card markup) and renumbered the "More to Come"
   placeholder card to `04`.
+
+**Follow-up prompt:**
+> Switch the chatbot backend from the Anthropic SDK to the OpenAI SDK, and
+> fix a silent-failure bug: when the API call fails, log the real exception
+> server-side before returning the vague 502 to the client.
+
+**What Claude did:**
+- Swapped `anthropic.Anthropic()` for `openai.OpenAI()` (reads
+  `OPENAI_API_KEY` from the environment automatically) and switched the
+  Claude message-creation call for the equivalent OpenAI chat completions
+  call, using `gpt-4o-mini` with the same system prompt and message history.
+  Validation, rate limiting, and CORS were left untouched.
+- Fixed a bug found while testing the previous version: an API failure (e.g.
+  a missing/invalid key) was being swallowed by a bare `except Exception`
+  with no logging, making it hard to tell why a request failed. Added
+  `app.logger.exception("Chat API call failed")` before returning the
+  generic 502, so the real cause now shows up in the server terminal while
+  the client still only sees a vague, safe error message.
+- Updated `requirements.txt`, `.env.example`, and `README.md` to reference
+  OpenAI/`OPENAI_API_KEY` instead of Anthropic/`ANTHROPIC_API_KEY`, changed
+  the run instruction to `python3 app.py`, and added a troubleshooting note
+  about clearing a leftover process on port 5051 with `lsof`/`kill`.

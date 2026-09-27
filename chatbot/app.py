@@ -1,19 +1,19 @@
 """
 Flask API for "Chat With Yash" — a small chatbot that answers questions
 about Yash Gupta (background, experience, projects) in his own voice,
-backed by the Anthropic API.
+backed by the OpenAI API.
 
-Run with:  python app.py
+Run with:  python3 app.py
 Then open: http://127.0.0.1:5051
 """
 
-from anthropic import Anthropic
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from openai import OpenAI
 
-MODEL = "claude-haiku-4-5-20251001"
+MODEL = "gpt-4o-mini"
 MAX_TOKENS = 500
 MAX_MESSAGES = 30
 MAX_MESSAGE_LENGTH = 2000
@@ -66,7 +66,7 @@ politely deflect and steer the conversation back to something you can actually \
 talk about."""
 
 app = Flask(__name__)
-client = Anthropic()
+client = OpenAI()
 
 limiter = Limiter(get_remote_address, app=app, default_limits=[])
 CORS(app, resources={r"/api/chat": {"origins": ALLOWED_ORIGIN}})
@@ -100,16 +100,16 @@ def api_chat():
             return jsonify({"error": f"Messages must be under {MAX_MESSAGE_LENGTH} characters."}), 400
 
     try:
-        response = client.messages.create(
+        response = client.chat.completions.create(
             model=MODEL,
             max_tokens=MAX_TOKENS,
-            system=SYSTEM_PROMPT,
-            messages=messages,
+            messages=[{"role": "system", "content": SYSTEM_PROMPT}, *messages],
         )
     except Exception:
+        app.logger.exception("Chat API call failed")
         return jsonify({"error": "Could not reach the chat service right now. Please try again in a moment."}), 502
 
-    reply = response.content[0].text if response.content else ""
+    reply = response.choices[0].message.content if response.choices else ""
     return jsonify({"reply": reply})
 
 
