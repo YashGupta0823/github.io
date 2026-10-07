@@ -1,5 +1,5 @@
 // Placeholder markets used when no backend is configured (or it is unreachable).
-// Mirrors SAMPLE_MARKETS in services/market_api.py and uses the same normalized shape.
+// Uses the same normalized shape as the backend's GET /api/markets (a subset of its fields).
 
 window.MarketLens = window.MarketLens || {};
 

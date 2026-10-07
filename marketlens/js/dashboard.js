@@ -1,9 +1,9 @@
 // MarketLens dashboard: renders metrics, movers, and market cards from the API,
-// then wires up search/category filtering and the Market Map chart.
+// then wires up search/category filtering and the interactive Market Map.
 
 (async function () {
   const ML = window.MarketLens;
-  const { pct, usd, escapeHtml, changeBadge, marketUrl } = ML.format;
+  const { pct, pts, usd, escapeHtml, changeBadge, marketUrl } = ML.format;
 
   const { markets: rawMarkets, sampleData } = await ML.api.getMarkets();
   const markets = ML.analytics.rankByVolume(rawMarkets);
@@ -11,9 +11,12 @@
   const css = getComputedStyle(document.documentElement);
   const token = (name) => css.getPropertyValue(name).trim();
 
-  // ---------- Render (previously done by templates/index.html) ----------
+  // ---------- Header + metrics ----------
 
-  document.getElementById("sample-pill").hidden = !sampleData;
+  const pill = document.getElementById("data-pill");
+  pill.textContent = sampleData ? "Sample data" : "Live · Kalshi";
+  pill.classList.toggle("live", !sampleData);
+  pill.hidden = false;
 
   const metrics = ML.analytics.overviewMetrics(markets);
   document.getElementById("metric-count").textContent = metrics.count;
@@ -27,19 +30,49 @@
       <a class="metric-sub" href="${marketUrl(m.id)}">${escapeHtml(m.title)}</a>`;
   }
 
-  const movers = ML.analytics.biggestMovers(markets, 5);
-  document.getElementById("movers-body").innerHTML = movers.length
-    ? `<ol class="movers">${movers.map((m) => `
-        <li>
-          <a href="${marketUrl(m.id)}">
-            <span class="mover-title">${escapeHtml(m.title)}</span>
-            <span class="mover-meta">
-              <span class="mono">${pct(m.probability)}</span>
-              ${changeBadge(m.change_24h)}
-            </span>
-          </a>
-        </li>`).join("")}</ol>`
-    : '<p class="empty">No market movement to show yet.</p>';
+  // ---------- Biggest movers (backend analytics, or computed locally for sample data) ----------
+
+  const backendMovers = sampleData ? null : await ML.api.getMovers();
+  const movers = backendMovers || {
+    biggest: ML.analytics.biggestMovers(markets, 5),
+    gainers: ML.analytics.topGainers(markets, 5),
+    losers: ML.analytics.topLosers(markets, 5),
+    most_volatile: [],
+  };
+
+  const moversBody = document.getElementById("movers-body");
+  const moverTabs = document.querySelectorAll("#movers-tabs .tab");
+
+  function renderMovers(kind) {
+    const list = movers[kind] || [];
+    moversBody.innerHTML = list.length
+      ? `<ol class="movers">${list.map((m) => `
+          <li>
+            <a href="${marketUrl(m.id)}">
+              <span class="mover-title">${escapeHtml(m.title)}</span>
+              <span class="mover-meta">
+                <span class="mono">${pct(m.probability)}</span>
+                ${changeBadge(m.change_24h)}
+                ${kind === "most_volatile"
+                  ? `<span class="muted mono" title="Standard deviation of hourly probability changes over 24h">σ ${(m.volatility * 100).toFixed(1)} pts/hr</span>`
+                  : ""}
+              </span>
+            </a>
+          </li>`).join("")}</ol>`
+      : '<p class="empty">No market movement to show yet.</p>';
+  }
+
+  // Volatility needs price history, which only the live backend provides.
+  document.querySelector('#movers-tabs [data-tab="most_volatile"]').hidden = !movers.most_volatile.length;
+  moverTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      moverTabs.forEach((t) => t.classList.toggle("active", t === tab));
+      renderMovers(tab.dataset.tab);
+    });
+  });
+  renderMovers("biggest");
+
+  // ---------- Market cards ----------
 
   const categories = [...new Set(markets.map((m) => m.category))].sort();
   document.getElementById("category-chips").insertAdjacentHTML("beforeend", categories
@@ -113,6 +146,8 @@
   applyFilters(); // honors ?q= from other pages
 
   // ---------- Market Map (bubble chart) ----------
+  // Hover shows a tooltip; click selects a bubble and shows a summary with a link
+  // to the market; clicking the selected bubble again opens it.
 
   const canvas = document.getElementById("market-map");
   if (!canvas) return;
@@ -139,22 +174,27 @@
     market: m,
   }));
 
-  const formatUsd = (v) =>
-    v >= 1e6 ? `$${(v / 1e6).toFixed(1)}M` : v >= 1e3 ? `$${(v / 1e3).toFixed(0)}K` : `$${v}`;
+  const selectionPanel = document.getElementById("map-selection");
+  let selected = null; // index into points
 
   Chart.defaults.font.family = token("--font");
   Chart.defaults.color = token("--text-muted");
 
-  new Chart(canvas, {
+  const chart = new Chart(canvas, {
     type: "bubble",
     data: {
       datasets: [{
         data: points,
-        backgroundColor: points.map((p) => colorFor(p.y) + "b3"), // ~70% opacity
-        borderColor: token("--surface"),                          // 2px surface ring separates overlaps
-        borderWidth: 2,
+        // Once something is selected, everything else fades back.
+        backgroundColor: (ctx) => {
+          const alpha = selected === null || ctx.dataIndex === selected ? "b3" : "33";
+          return colorFor(points[ctx.dataIndex].y) + alpha;
+        },
+        borderColor: (ctx) => (ctx.dataIndex === selected ? token("--text") : token("--surface")),
+        borderWidth: (ctx) => (ctx.dataIndex === selected ? 3 : 2), // surface ring separates overlaps
         hoverBorderColor: token("--text"),
         hoverBorderWidth: 2,
+        hitRadius: 4, // a little bigger than the mark so small bubbles are easy to hit
       }],
     },
     options: {
@@ -188,19 +228,21 @@
           borderWidth: 1,
           titleColor: token("--text"),
           bodyColor: token("--text-muted"),
+          footerColor: token("--text-faint"),
+          footerFont: { weight: "normal" },
           padding: 12,
           displayColors: false,
           callbacks: {
             title: (items) => items[0].raw.market.title,
             label: (item) => {
               const m = item.raw.market;
-              const sign = m.change_24h > 0 ? "+" : "";
               return [
-                `Probability  ${(m.probability * 100).toFixed(0)}%`,
-                `24h change   ${sign}${(m.change_24h * 100).toFixed(1)} pts`,
-                `Volume       ${formatUsd(m.volume)}`,
+                `Probability  ${pct(m.probability)}`,
+                `24h change   ${pts(m.change_24h)}`,
+                `Volume       ${usd(m.volume)}`,
               ];
             },
+            footer: (items) => (items[0].dataIndex === selected ? "Click again to open" : "Click to select"),
           },
         },
       },
@@ -208,10 +250,45 @@
         event.native.target.style.cursor = elements.length ? "pointer" : "default";
       },
       onClick: (_event, elements) => {
-        if (!elements.length) return;
-        const market = points[elements[0].index].market;
-        window.location.href = marketUrl(market.id);
+        if (!elements.length) return select(null);
+        const index = elements[0].index;
+        if (index === selected) {
+          window.location.href = marketUrl(points[index].market.id);
+        } else {
+          select(index);
+        }
       },
     },
+  });
+
+  function select(index) {
+    selected = index;
+    chart.update("none");
+
+    if (index === null) {
+      selectionPanel.hidden = true;
+      return;
+    }
+    const m = points[index].market;
+    selectionPanel.innerHTML = `
+      <div class="map-selection-text">
+        <span class="category">${escapeHtml(m.category)}</span>
+        <a class="map-selection-title" href="${marketUrl(m.id)}">${escapeHtml(m.title)}</a>
+        <span class="map-selection-stats">
+          <span class="mono">${pct(m.probability)} Yes</span>
+          ${changeBadge(m.change_24h)}
+          <span class="muted mono">${usd(m.volume)} vol</span>
+        </span>
+      </div>
+      <div class="map-selection-actions">
+        <a class="btn" href="${marketUrl(m.id)}">Open market →</a>
+        <button class="btn btn-ghost" type="button" aria-label="Clear selection">✕</button>
+      </div>`;
+    selectionPanel.querySelector("button").addEventListener("click", () => select(null));
+    selectionPanel.hidden = false;
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && selected !== null) select(null);
   });
 })();

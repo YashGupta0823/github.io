@@ -34,7 +34,7 @@
         <h1>Discover</h1>
         <p class="muted">What prediction markets are pricing right now, and what's moving.</p>
       </div>
-      <span class="pill" id="sample-pill" hidden>Sample data</span>
+      <span class="pill" id="data-pill" hidden></span>
     </section>
 
     <!-- Overview metrics -->
@@ -63,18 +63,25 @@
         <div class="panel-head">
           <div>
             <h2>Market Map</h2>
-            <p class="muted small">Probability vs. 24h change · bubble size = volume</p>
+            <p class="muted small">Probability vs. 24h change · bubble size = volume · click a bubble to select</p>
           </div>
         </div>
         <div class="chart-wrap">
           <canvas id="market-map" aria-label="Bubble chart of markets by probability and 24 hour change" role="img"></canvas>
         </div>
+        <div class="map-selection" id="map-selection" aria-live="polite" hidden></div>
       </div>
 
       <div class="panel" id="movers">
         <div class="panel-head">
           <h2>Biggest Movers</h2>
           <span class="muted small">24h</span>
+        </div>
+        <div class="tabs" id="movers-tabs" role="tablist" aria-label="Mover type">
+          <button class="tab active" role="tab" data-tab="biggest">All</button>
+          <button class="tab" role="tab" data-tab="gainers">Up</button>
+          <button class="tab" role="tab" data-tab="losers">Down</button>
+          <button class="tab" role="tab" data-tab="most_volatile" hidden>Volatile</button>
         </div>
         <div id="movers-body"></div>
       </div>

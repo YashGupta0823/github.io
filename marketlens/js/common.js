@@ -1,5 +1,5 @@
-// Shared helpers for every MarketLens page: display formatters (ports of the
-// Jinja filters in app.py), analytics (port of services/analytics.py), and nav.
+// Shared helpers for every MarketLens page: display formatters, analytics (a port of
+// marketlens-backend/services/analytics.py, used for sample data), and nav.
 
 window.MarketLens = window.MarketLens || {};
 
@@ -18,6 +18,24 @@ window.MarketLens = window.MarketLens || {};
       if (value >= threshold) return `$${(value / threshold).toFixed(1)}${suffix}`;
     }
     return `$${Math.round(value).toLocaleString("en-US")}`;
+  }
+
+  // 0.105 -> "10.5¢" (a Kalshi contract price; $1 pays out if Yes)
+  const cents = (price) => (price == null ? "—" : `${(price * 100).toFixed(price < 0.1 ? 1 : 0)}¢`);
+
+  // 22_013_291 -> "22.0M" (contract counts)
+  function compact(value) {
+    for (const [threshold, suffix] of [[1e9, "B"], [1e6, "M"], [1e3, "K"]]) {
+      if (value >= threshold) return `${(value / threshold).toFixed(1)}${suffix}`;
+    }
+    return Math.round(value).toLocaleString("en-US");
+  }
+
+  // "2027-02-01T15:00:00Z" -> "Feb 1, 2027, 10:00 AM" in the viewer's timezone
+  function niceDateTime(isoString) {
+    const date = new Date(isoString || "");
+    if (Number.isNaN(date.getTime())) return "—";
+    return date.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
   }
 
   // "2026-12-16" -> "Dec 16, 2026" (parsed by hand so the local timezone can't shift the day)
@@ -53,6 +71,12 @@ window.MarketLens = window.MarketLens || {};
   const biggestMovers = (markets, limit = 5) =>
     [...markets].sort((a, b) => Math.abs(b.change_24h) - Math.abs(a.change_24h)).slice(0, limit);
 
+  const topGainers = (markets, limit = 5) =>
+    markets.filter((m) => m.change_24h > 0).sort((a, b) => b.change_24h - a.change_24h).slice(0, limit);
+
+  const topLosers = (markets, limit = 5) =>
+    markets.filter((m) => m.change_24h < 0).sort((a, b) => a.change_24h - b.change_24h).slice(0, limit);
+
   function volumeRank(markets, marketId) {
     const index = rankByVolume(markets).findIndex((m) => m.id === marketId);
     return index === -1 ? null : index + 1;
@@ -68,8 +92,8 @@ window.MarketLens = window.MarketLens || {};
     };
   }
 
-  ML.format = { pct, pts, usd, niceDate, escapeHtml, direction, arrow, changeBadge, marketUrl };
-  ML.analytics = { rankByVolume, biggestMovers, volumeRank, overviewMetrics };
+  ML.format = { pct, pts, usd, cents, compact, niceDate, niceDateTime, escapeHtml, direction, arrow, changeBadge, marketUrl };
+  ML.analytics = { rankByVolume, biggestMovers, topGainers, topLosers, volumeRank, overviewMetrics };
 
   // ---------- Nav search ----------
 
