@@ -1,16 +1,34 @@
-MarketLens is an interactive prediction market analytics dashboard that uses live Kalshi market data to help users explore probabilities, recent price movement, volume, historical trends.
+MarketLens is an interactive prediction market analytics dashboard built around live Kalshi data.
+It helps users explore market implied probabilities, recent price movement, trading volume, historical trends,
+and order book activity through an interactive visual interface.
 
-Festures include:
-Live prediction market data from Kalshi
-Interactive Market Map
-Implied probability
-Trading volume
-Market detail pages
-Historical probability charts
-Volume and order book data
-Biggest Movers section
-Gemini AI Market Briefs
+The main dashboard gives an overview of active prediction markets and includes an interactive Market Map where:
 
-The frontend is on GitHub Pages with a Flask backend hosted on Render. The backend retrieves live Kalshi data and does the numerical analysis used throughout the site.
+- the x-axis represents current market-implied probability
+- the y-axis represents 24-hour probability change
+- bubble size represents trading volume
 
-The AI Market Brief feature uses Gemini only to explain already calculated market statistics.
+Users can hover over markets for more information, click into individual markets, view historical probability charts, inspect volume and open interest, and explore the current order book.
+
+Each market also includes an optional AI Market Brief that summarizes the calculated market data in plain language.
+
+
+How to use:
+1. Open the MarketLens website.
+2. Explore the Market Map and hover over bubbles for market details.
+3. Click a market to open its full detail page.
+4. View its historical probability chart, volume, open interest, order book, and resolution information.
+5. Click Generate Market Brief to receive a short AI generated explanation of the market's current pricing and recent movement.
+
+Features I Am Most Proud Of
+The Market Map is the main visualization in the project. It lets users compare many markets at once
+using probability, 24-hour movement, and trading volume.
+
+Live Kalshi Data
+The application uses real prediction market data from Kalshi through a Flask backend rather than relying only on static sample data.
+
+Historical Market Exploration
+Individual market pages include real historical probability data and interactive charts so users can explore how market pricing changes over time.
+
+AI Market Brief
+The AI feature is intentionally separated from the analysis. Python calculates the probability changes, volatility, volume information, and other statistics first. Gemini only receives those values and explains them in language.
