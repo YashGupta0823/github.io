@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Market · MarketLens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>MarketLens
+      </a>
+      <nav class="nav-links">
+        <a href="index.html#markets">Discover</a>
+        <a href="index.html#movers">Movers</a>
+        <a href="watchlist.html">Watchlist</a>
+      </nav>
+      <form class="nav-search" action="index.html" method="get" role="search">
+        <input id="search-input" type="search" name="q" placeholder="Search markets" maxlength="100"
+               autocomplete="off" aria-label="Search markets">
+        <kbd>/</kbd>
+      </form>
+    </div>
+  </header>
+
+  <!-- market.js fills this in from ?id=<market id> -->
+  <main class="container" id="market-root"></main>
+
+  <footer class="footer container">
+    <span>MarketLens · Market-implied probabilities are not facts or financial advice.</span>
+  </footer>
+
+  <script src="js/mock-data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/market.js"></script>
+</body>
+</html>

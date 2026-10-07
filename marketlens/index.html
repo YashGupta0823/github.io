@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Discover · MarketLens</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark" aria-hidden="true"></span>MarketLens
+      </a>
+      <nav class="nav-links">
+        <a href="index.html#markets" class="active">Discover</a>
+        <a href="index.html#movers">Movers</a>
+        <a href="watchlist.html">Watchlist</a>
+      </nav>
+      <form class="nav-search" action="index.html" method="get" role="search">
+        <input id="search-input" type="search" name="q" placeholder="Search markets" maxlength="100"
+               autocomplete="off" aria-label="Search markets">
+        <kbd>/</kbd>
+      </form>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="page-head">
+      <div>
+        <h1>Discover</h1>
+        <p class="muted">What prediction markets are pricing right now, and what's moving.</p>
+      </div>
+      <span class="pill" id="sample-pill" hidden>Sample data</span>
+    </section>
+
+    <!-- Overview metrics -->
+    <section class="metrics">
+      <div class="metric">
+        <span class="metric-label">Active markets</span>
+        <span class="metric-value" id="metric-count">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Total volume</span>
+        <span class="metric-value" id="metric-volume">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Avg. 24h move</span>
+        <span class="metric-value" id="metric-avg-move">—</span>
+      </div>
+      <div class="metric" id="metric-top-mover">
+        <span class="metric-label">Largest move</span>
+        <span class="metric-value">—</span>
+      </div>
+    </section>
+
+    <!-- Market Map + Biggest Movers -->
+    <section class="split">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Market Map</h2>
+            <p class="muted small">Probability vs. 24h change · bubble size = volume</p>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="market-map" aria-label="Bubble chart of markets by probability and 24 hour change" role="img"></canvas>
+        </div>
+      </div>
+
+      <div class="panel" id="movers">
+        <div class="panel-head">
+          <h2>Biggest Movers</h2>
+          <span class="muted small">24h</span>
+        </div>
+        <div id="movers-body"></div>
+      </div>
+    </section>
+
+    <!-- Markets list -->
+    <section id="markets">
+      <div class="section-head">
+        <h2>Active Markets</h2>
+        <div class="chips" id="category-chips" role="group" aria-label="Filter by category">
+          <button class="chip active" data-category="">All</button>
+        </div>
+      </div>
+
+      <div class="card-grid" id="market-grid"></div>
+      <p class="empty" id="no-results" hidden>No markets match your search.</p>
+    </section>
+  </main>
+
+  <footer class="footer container">
+    <span>MarketLens · Market-implied probabilities are not facts or financial advice.</span>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="js/mock-data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
