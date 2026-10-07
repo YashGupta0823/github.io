@@ -1,0 +1,16 @@
+MarketLens is an interactive prediction market analytics dashboard that uses live Kalshi market data to help users explore probabilities, recent price movement, volume, historical trends.
+
+Festures include:
+Live prediction market data from Kalshi
+Interactive Market Map
+Implied probability
+Trading volume
+Market detail pages
+Historical probability charts
+Volume and order book data
+Biggest Movers section
+Gemini AI Market Briefs
+
+The frontend is on GitHub Pages with a Flask backend hosted on Render. The backend retrieves live Kalshi data and does the numerical analysis used throughout the site.
+
+The AI Market Brief feature uses Gemini only to explain already calculated market statistics.
