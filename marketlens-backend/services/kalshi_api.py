@@ -401,7 +401,12 @@ def get_markets():
 
 
 def warm_cache():
-    """Load the market list in the background at startup so the first visitor doesn't wait."""
+    """Load the market list in the background at startup so the first visitor doesn't wait.
+
+    Call this from the process that serves requests (see gunicorn.conf.py), never at
+    import time: a thread started before gunicorn forks would hold locks the worker
+    can never release.
+    """
     def run():
         try:
             get_markets()

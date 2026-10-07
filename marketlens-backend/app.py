@@ -24,7 +24,6 @@ log = logging.getLogger("marketlens")
 
 app = Flask(__name__)
 app.json.sort_keys = False
-kalshi_api.warm_cache()
 
 
 # ---------------------------------------------------------------------------
@@ -230,5 +229,6 @@ def movers():
 
 
 if __name__ == "__main__":
+    kalshi_api.warm_cache()  # under gunicorn, gunicorn.conf.py's post_fork hook does this
     port = int(os.getenv("PORT", "5001"))
     app.run(host="0.0.0.0", port=port, debug=os.getenv("FLASK_DEBUG") == "1")
