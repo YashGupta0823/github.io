@@ -243,6 +243,8 @@ Test the deployed MarketLens application end-to-end. Verify live Kalshi data, Ma
 Claude verified the main production flows and confirmed that the GitHub Pages frontend was successfully communicating with the Render backend.
 
 
+One place Calude Code got it wrong was integrating the Kalshi API. I had to manually go in and provide documentation and API links in order to configure it.
+
 Meaningful Changes I Personally Made
 
 AI generated or assisted with a significant amount of code, but I made the following project decisions and changes myself:
