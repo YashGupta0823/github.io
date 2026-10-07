@@ -1,28 +1,40 @@
 // MarketLens API client: the only file that knows where market data comes from.
 //
-// After deploying the Flask backend (marketlens-backend/) to Render, paste its URL
-// into PRODUCTION_API_URL, e.g. "https://marketlens-api.onrender.com" (no trailing
-// slash). That is the only change needed.
+// PRODUCTION_API_URL is the Flask backend (marketlens-backend/) deployed on Render.
+// If it is empty, or the backend can't be reached, the site falls back to the
+// bundled sample data in mock-data.js and labels it "Demo data".
 //
-// While PRODUCTION_API_URL is empty, or whenever the backend can't be reached, the
-// site falls back to the bundled sample data in mock-data.js.
+// Local development only: open a page with ?api=<url> (e.g. ?api=http://127.0.0.1:5001
+// for a local Flask server) to point this browser tab at another backend. The override
+// is ignored everywhere except localhost, so nobody can repoint the public site.
 //
 // Never put API keys or secrets in this file: everything here is public.
 
 window.MarketLens = window.MarketLens || {};
 
 (function (ML) {
-  const PRODUCTION_API_URL = "";
+  const PRODUCTION_API_URL = "https://marketlens-api-p707.onrender.com";
 
-  // When the page itself is served from localhost, use the local Flask server instead.
-  const LOCAL_API_URL = "http://127.0.0.1:5001";
   const isLocalPage = ["localhost", "127.0.0.1"].includes(window.location.hostname);
 
-  const API_BASE_URL = isLocalPage ? LOCAL_API_URL : PRODUCTION_API_URL;
+  function localOverride() {
+    if (!isLocalPage) return null;
+    try {
+      const fromQuery = new URLSearchParams(window.location.search).get("api");
+      if (fromQuery !== null) sessionStorage.setItem("marketlens-api", fromQuery); // persists across pages in this tab
+      return sessionStorage.getItem("marketlens-api");
+    } catch {
+      return null; // storage blocked: just use production
+    }
+  }
 
-  // Render's free tier sleeps when idle and can take ~30s to wake up, so be patient
-  // before giving up and showing sample data.
-  const REQUEST_TIMEOUT_MS = 30000;
+  const API_BASE_URL = (localOverride() || PRODUCTION_API_URL).replace(/\/+$/, "");
+
+  // Render's free tier sleeps when idle and takes up to about a minute to wake, so
+  // wait that long before falling back to sample data. An awake backend answers in
+  // well under a second, and a refused connection fails immediately, so this only
+  // matters during a cold start.
+  const REQUEST_TIMEOUT_MS = 70000;
 
   function mockMarkets() {
     return ML.MOCK_MARKETS.map((m) => ({ ...m }));
@@ -63,7 +75,12 @@ window.MarketLens = window.MarketLens || {};
     if (!API_BASE_URL) return { markets: mockMarkets(), sampleData: true };
     try {
       const data = await cachedJson("/api/markets?limit=60");
-      return { markets: data.markets, sampleData: Boolean(data.sample_data), updatedAt: data.updated_at };
+      return {
+        markets: data.markets,
+        sampleData: Boolean(data.sample_data),
+        updatedAt: data.updated_at,
+        stale: Boolean(data.stale),
+      };
     } catch (err) {
       console.warn("Backend unavailable, falling back to sample data.", err);
       return { markets: mockMarkets(), sampleData: true };

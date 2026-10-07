@@ -92,6 +92,33 @@ window.MarketLens = window.MarketLens || {};
     };
   }
 
+  // ---------- Data-source status ----------
+  // Every page says where its numbers come from, so sample data is never mistaken for live data.
+
+  function renderStatus(el, { sampleData, updatedAt, stale }) {
+    if (sampleData) {
+      el.innerHTML = `<span class="pill" title="Live market data is unavailable right now, so these are sample markets.">Demo data</span>`;
+      return;
+    }
+    const date = new Date(updatedAt || "");
+    const time = Number.isNaN(date.getTime())
+      ? ""
+      : `<span class="status-time">Last updated ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}${stale ? " (delayed)" : ""}</span>`;
+    el.innerHTML = `<span class="pill live">Live Kalshi data</span>${time}`;
+  }
+
+  // Shown while waiting for the API. Render's free tier can take up to a minute to wake,
+  // so after a few seconds explain the wait instead of looking frozen. Returns a stop function.
+  function showConnecting(el) {
+    el.innerHTML = '<span class="pill connecting">Connecting to live markets…</span>';
+    const timer = setTimeout(() => {
+      el.insertAdjacentHTML("beforeend", '<span class="status-time">Waking up the server; this can take up to a minute.</span>');
+    }, 4000);
+    return () => clearTimeout(timer);
+  }
+
+  ML.status = { render: renderStatus, connecting: showConnecting };
+
   ML.format = { pct, pts, usd, cents, compact, niceDate, niceDateTime, escapeHtml, direction, arrow, changeBadge, marketUrl };
   ML.analytics = { rankByVolume, biggestMovers, topGainers, topLosers, volumeRank, overviewMetrics };
 

@@ -7,11 +7,17 @@
   const root = document.getElementById("market-root");
 
   const id = new URLSearchParams(window.location.search).get("id") || "";
+
+  root.innerHTML = '<section class="empty-page"><div class="data-status centered" id="loading-status" aria-live="polite"></div></section>';
+  const stopConnecting = ML.status.connecting(document.getElementById("loading-status"));
+
   // The full list is needed for volume rank, and tells us whether this is sample data.
-  const [{ markets, sampleData }, market] = await Promise.all([
+  const [marketData, market] = await Promise.all([
     ML.api.getMarkets(),
     id ? ML.api.getMarket(id) : Promise.resolve(null),
   ]);
+  stopConnecting();
+  const { markets, sampleData } = marketData;
 
   if (!market) {
     document.title = "Market not found · MarketLens";
@@ -28,9 +34,6 @@
   document.title = `${market.title} · MarketLens`;
   const dir = direction(market.change_24h);
   const rank = ML.analytics.volumeRank(markets, market.id);
-  const dataPill = isLive && !sampleData
-    ? '<span class="pill live">Live · Kalshi</span>'
-    : '<span class="pill">Sample data</span>';
 
   const PROBABILITY_METHODS = {
     midpoint: "Midpoint of best bid and ask",
@@ -53,8 +56,9 @@
         <span class="category">${escapeHtml(market.category)}${isLive ? ` · <span class="mono">${escapeHtml(market.ticker)}</span>` : ""}</span>
         <h1 class="detail-title">${escapeHtml(market.title)}</h1>
         <p class="muted small">
-          ${market.subtitle ? `${escapeHtml(market.subtitle)} · ` : ""}Closes ${niceDate(market.end_date)} · ${dataPill}
+          ${market.subtitle ? `${escapeHtml(market.subtitle)} · ` : ""}Closes ${niceDate(market.end_date)}
         </p>
+        <div class="data-status start" id="data-status"></div>
       </div>
       <button class="btn btn-ghost" type="button" title="Watchlist coming in the next step">☆ Add to watchlist</button>
     </section>
@@ -130,6 +134,9 @@
       </p>
       <button class="btn" type="button" disabled>Generate brief</button>
     </section>`;
+
+  // Live only if this market itself came from Kalshi, not just the market list.
+  ML.status.render(document.getElementById("data-status"), { ...marketData, sampleData: sampleData || !isLive });
 
   const css = getComputedStyle(document.documentElement);
   const token = (name) => css.getPropertyValue(name).trim();

@@ -5,18 +5,22 @@
   const ML = window.MarketLens;
   const { pct, pts, usd, escapeHtml, changeBadge, marketUrl } = ML.format;
 
-  const { markets: rawMarkets, sampleData } = await ML.api.getMarkets();
+  const status = document.getElementById("data-status");
+  const grid = document.getElementById("market-grid");
+  const stopConnecting = ML.status.connecting(status);
+  grid.innerHTML = '<p class="empty">Loading markets…</p>';
+
+  const marketData = await ML.api.getMarkets();
+  stopConnecting();
+  ML.status.render(status, marketData);
+
+  const { markets: rawMarkets, sampleData } = marketData;
   const markets = ML.analytics.rankByVolume(rawMarkets);
 
   const css = getComputedStyle(document.documentElement);
   const token = (name) => css.getPropertyValue(name).trim();
 
   // ---------- Header + metrics ----------
-
-  const pill = document.getElementById("data-pill");
-  pill.textContent = sampleData ? "Sample data" : "Live · Kalshi";
-  pill.classList.toggle("live", !sampleData);
-  pill.hidden = false;
 
   const metrics = ML.analytics.overviewMetrics(markets);
   document.getElementById("metric-count").textContent = metrics.count;
@@ -31,19 +35,18 @@
   }
 
   // ---------- Biggest movers (backend analytics, or computed locally for sample data) ----------
-
-  const backendMovers = sampleData ? null : await ML.api.getMovers();
-  const movers = backendMovers || {
-    biggest: ML.analytics.biggestMovers(markets, 5),
-    gainers: ML.analytics.topGainers(markets, 5),
-    losers: ML.analytics.topLosers(markets, 5),
-    most_volatile: [],
-  };
+  // Loaded in the background so the cards and map never wait on it.
 
   const moversBody = document.getElementById("movers-body");
   const moverTabs = document.querySelectorAll("#movers-tabs .tab");
+  let movers = null;
+  let activeMoverTab = "biggest";
 
   function renderMovers(kind) {
+    if (!movers) {
+      moversBody.innerHTML = '<p class="empty">Loading movers…</p>';
+      return;
+    }
     const list = movers[kind] || [];
     moversBody.innerHTML = list.length
       ? `<ol class="movers">${list.map((m) => `
@@ -62,15 +65,26 @@
       : '<p class="empty">No market movement to show yet.</p>';
   }
 
-  // Volatility needs price history, which only the live backend provides.
-  document.querySelector('#movers-tabs [data-tab="most_volatile"]').hidden = !movers.most_volatile.length;
   moverTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       moverTabs.forEach((t) => t.classList.toggle("active", t === tab));
-      renderMovers(tab.dataset.tab);
+      activeMoverTab = tab.dataset.tab;
+      renderMovers(activeMoverTab);
     });
   });
-  renderMovers("biggest");
+  renderMovers(activeMoverTab);
+
+  (sampleData ? Promise.resolve(null) : ML.api.getMovers()).then((backendMovers) => {
+    movers = backendMovers || {
+      biggest: ML.analytics.biggestMovers(markets, 5),
+      gainers: ML.analytics.topGainers(markets, 5),
+      losers: ML.analytics.topLosers(markets, 5),
+      most_volatile: [],
+    };
+    // Volatility needs price history, which only the live backend provides.
+    document.querySelector('#movers-tabs [data-tab="most_volatile"]').hidden = !movers.most_volatile.length;
+    renderMovers(activeMoverTab);
+  });
 
   // ---------- Market cards ----------
 
@@ -79,7 +93,7 @@
     .map((c) => `<button class="chip" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`)
     .join(""));
 
-  document.getElementById("market-grid").innerHTML = markets.map((m) => `
+  grid.innerHTML = markets.map((m) => `
     <article class="card" data-title="${escapeHtml(m.title.toLowerCase())}" data-category="${escapeHtml(m.category)}">
       <a class="card-link" href="${marketUrl(m.id)}" aria-label="${escapeHtml(m.title)}"></a>
       <div class="card-top">

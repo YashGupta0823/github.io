@@ -215,8 +215,9 @@ class TTLCache:
         if entry and background:
             if lock.acquire(blocking=False):  # skip if a refresh is already running
                 threading.Thread(target=self._refresh, args=(key, fetch, lock), daemon=True).start()
-            # Only call it stale once refreshes have been failing for a while.
-            return entry[0], entry[1], time.time() - entry[1] > 2 * ttl_seconds
+            # Old data after an idle period is normal (updated_at shows its age); it's only
+            # "stale" when the most recent attempt to refresh it failed.
+            return entry[0], entry[1], key in self._failures
 
         with lock:
             entry = self._entries.get(key)  # another request may have just fetched it
