@@ -60,7 +60,6 @@
         </p>
         <div class="data-status start" id="data-status"></div>
       </div>
-      <button class="btn btn-ghost" type="button" title="Watchlist coming in the next step">☆ Add to watchlist</button>
     </section>
 
     <section class="detail-grid">
@@ -124,15 +123,14 @@
     </section>
 
     <section class="panel brief">
-      <div class="panel-head">
-        <h2>AI Market Brief</h2>
-        <span class="pill">Coming soon</span>
-      </div>
-      <p class="muted">
-        A short, data-grounded explanation of what this market is pricing and how much it has moved.
-        All numbers are computed first; the model only interprets them.
+      <div class="panel-head"><h2>AI Market Brief</h2></div>
+      <p class="muted brief-intro">
+        MarketLens analyzes the quantitative market data shown above and uses AI to summarize what the
+        current pricing and recent movement may indicate. Numerical calculations are performed by
+        MarketLens; AI is used only to explain the results.
       </p>
-      <button class="btn" type="button" disabled>Generate brief</button>
+      <div class="brief-output" id="brief-output" aria-live="polite" hidden></div>
+      <button class="btn" type="button" id="brief-button">Generate Market Brief</button>
     </section>`;
 
   // Live only if this market itself came from Kalshi, not just the market list.
@@ -143,6 +141,48 @@
 
   renderOrderbook();
   setUpHistory();
+  setUpBrief();
+
+  // ---------- AI Market Brief (generated only when the visitor asks) ----------
+
+  function setUpBrief() {
+    const button = document.getElementById("brief-button");
+    const output = document.getElementById("brief-output");
+
+    if (!isLive || sampleData) {
+      button.disabled = true;
+      output.innerHTML = '<p class="muted small">The Market Brief is available with live Kalshi data.</p>';
+      output.hidden = false;
+      return;
+    }
+
+    let pending = false;
+    button.addEventListener("click", async () => {
+      if (pending) return; // one request at a time
+      pending = true;
+      button.disabled = true;
+      output.hidden = false;
+      output.innerHTML = '<p class="brief-status"><span class="pill connecting">Analyzing market data…</span></p>';
+
+      const result = await ML.api.generateBrief(market.id);
+      pending = false;
+      button.disabled = false;
+
+      if (result.brief) {
+        const paragraphs = result.brief.split(/\n\s*\n/).map((p) => `<p>${escapeHtml(p.trim())}</p>`).join("");
+        output.innerHTML = `
+          <div class="brief-text">${paragraphs}</div>
+          <p class="brief-disclosure">
+            AI-generated interpretation based on market data. Market-implied probabilities are not
+            guarantees and this is not financial advice.
+          </p>`;
+        button.textContent = "Regenerate Brief";
+      } else {
+        output.innerHTML = `<p class="brief-error">${escapeHtml(result.error)}</p>`;
+        button.textContent = "Try Again";
+      }
+    });
+  }
 
   // ---------- Order book ----------
 

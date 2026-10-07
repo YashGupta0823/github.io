@@ -136,5 +136,34 @@ window.MarketLens = window.MarketLens || {};
     }
   }
 
-  ML.api = { API_BASE_URL, getMarkets, getMarket, getHistory, getOrderbook, getMovers };
+  /**
+   * AI Market Brief for one market: { brief, generated_at, model } or { error }.
+   * Never cached, so "Regenerate" asks again. The Gemini key lives only on the
+   * backend; the browser just calls this endpoint.
+   */
+  async function generateBrief(id) {
+    const unavailable = "Market Brief is temporarily unavailable.";
+    if (!API_BASE_URL || isSampleId(id)) return { error: "The Market Brief is available with live Kalshi data." };
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 45000);
+    try {
+      // No request body or custom headers, so the browser sends it without a CORS preflight.
+      const res = await fetch(`${API_BASE_URL}/api/markets/${encodeURIComponent(id)}/brief`, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        signal: controller.signal,
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.brief) return data;
+      return { error: data.error || unavailable };
+    } catch (err) {
+      console.warn("Market Brief request failed.", err);
+      return { error: unavailable };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  ML.api = { API_BASE_URL, getMarkets, getMarket, getHistory, getOrderbook, getMovers, generateBrief };
 })(window.MarketLens);

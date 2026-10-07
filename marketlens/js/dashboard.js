@@ -1,5 +1,5 @@
 // MarketLens dashboard: renders metrics, movers, and market cards from the API,
-// then wires up search/category filtering and the interactive Market Map.
+// then wires up the interactive Market Map.
 
 (async function () {
   const ML = window.MarketLens;
@@ -88,18 +88,10 @@
 
   // ---------- Market cards ----------
 
-  const categories = [...new Set(markets.map((m) => m.category))].sort();
-  document.getElementById("category-chips").insertAdjacentHTML("beforeend", categories
-    .map((c) => `<button class="chip" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`)
-    .join(""));
-
   grid.innerHTML = markets.map((m) => `
-    <article class="card" data-title="${escapeHtml(m.title.toLowerCase())}" data-category="${escapeHtml(m.category)}">
+    <article class="card">
       <a class="card-link" href="${marketUrl(m.id)}" aria-label="${escapeHtml(m.title)}"></a>
-      <div class="card-top">
-        <span class="category">${escapeHtml(m.category)}</span>
-        <button class="watch-btn" type="button" title="Watchlist coming in the next step" aria-label="Add to watchlist">☆</button>
-      </div>
+      <span class="category">${escapeHtml(m.category)}</span>
       <h3 class="card-title">${escapeHtml(m.title)}</h3>
       <div class="card-bottom">
         <div>
@@ -119,45 +111,6 @@
     const target = document.getElementById(window.location.hash.slice(1));
     if (target) target.scrollIntoView();
   }
-
-  // ---------- Search + category filter ----------
-
-  const searchInput = document.getElementById("search-input");
-  const cards = document.querySelectorAll("#market-grid .card");
-  const chips = document.querySelectorAll(".chip");
-  const noResults = document.getElementById("no-results");
-  let activeCategory = "";
-
-  function applyFilters() {
-    const query = searchInput.value.trim().toLowerCase();
-    let visible = 0;
-    cards.forEach((card) => {
-      const matchesText = card.dataset.title.includes(query);
-      const matchesCategory = !activeCategory || card.dataset.category === activeCategory;
-      const show = matchesText && matchesCategory;
-      card.hidden = !show;
-      if (show) visible++;
-    });
-    noResults.hidden = visible > 0;
-  }
-
-  // On the dashboard, search filters live instead of submitting the form.
-  searchInput.closest("form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    document.getElementById("markets").scrollIntoView();
-  });
-  searchInput.addEventListener("input", applyFilters);
-
-  chips.forEach((chip) => {
-    chip.addEventListener("click", () => {
-      chips.forEach((c) => c.classList.remove("active"));
-      chip.classList.add("active");
-      activeCategory = chip.dataset.category;
-      applyFilters();
-    });
-  });
-
-  applyFilters(); // honors ?q= from other pages
 
   // ---------- Market Map (bubble chart) ----------
   // Hover shows a tooltip; click selects a bubble and shows a summary with a link

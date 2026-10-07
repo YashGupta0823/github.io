@@ -18,13 +18,7 @@
       <nav class="nav-links">
         <a href="index.html#markets" class="active">Discover</a>
         <a href="index.html#movers">Movers</a>
-        <a href="watchlist.html">Watchlist</a>
       </nav>
-      <form class="nav-search" action="index.html" method="get" role="search">
-        <input id="search-input" type="search" name="q" placeholder="Search markets" maxlength="100"
-               autocomplete="off" aria-label="Search markets">
-        <kbd>/</kbd>
-      </form>
     </div>
   </header>
 
@@ -91,13 +85,10 @@
     <section id="markets">
       <div class="section-head">
         <h2>Active Markets</h2>
-        <div class="chips" id="category-chips" role="group" aria-label="Filter by category">
-          <button class="chip active" data-category="">All</button>
-        </div>
+        <span class="muted small">Most traded first</span>
       </div>
 
       <div class="card-grid" id="market-grid"></div>
-      <p class="empty" id="no-results" hidden>No markets match your search.</p>
     </section>
   </main>
 

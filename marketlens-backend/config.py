@@ -1,8 +1,9 @@
 """Application configuration, read from environment variables.
 
 Locally, values can live in a .env file (see .env.example). On Render, set them
-in the service's Environment tab. Nothing here is secret yet: Kalshi's market-data
-endpoints are public and need no API key.
+in the service's Environment tab. Kalshi's market-data endpoints are public and need
+no key. The only secret, GEMINI_API_KEY, is read by services/ai_service.py at call
+time and is never stored here.
 """
 
 import os
@@ -61,6 +62,3 @@ class Config:
     # 30-team championship can't fill the dashboard), and this many markets total.
     MAX_MARKETS_PER_EVENT = int(os.getenv("MAX_MARKETS_PER_EVENT", "3"))
     MAX_MARKETS = int(os.getenv("MAX_MARKETS", "150"))
-
-    # Used by the AI Market Brief (later step). Never hardcode keys.
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")

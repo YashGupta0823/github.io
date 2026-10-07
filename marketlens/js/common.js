@@ -1,5 +1,5 @@
 // Shared helpers for every MarketLens page: display formatters, analytics (a port of
-// marketlens-backend/services/analytics.py, used for sample data), and nav.
+// marketlens-backend/services/analytics.py, used for sample data), and data-source status.
 
 window.MarketLens = window.MarketLens || {};
 
@@ -121,20 +121,4 @@ window.MarketLens = window.MarketLens || {};
 
   ML.format = { pct, pts, usd, cents, compact, niceDate, niceDateTime, escapeHtml, direction, arrow, changeBadge, marketUrl };
   ML.analytics = { rankByVolume, biggestMovers, topGainers, topLosers, volumeRank, overviewMetrics };
-
-  // ---------- Nav search ----------
-
-  const searchInput = document.getElementById("search-input");
-  if (searchInput) {
-    // Pre-fill from ?q= (the Flask version did this server-side).
-    searchInput.value = (new URLSearchParams(window.location.search).get("q") || "").trim().slice(0, 100);
-
-    // Press "/" anywhere to focus search.
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "/" && document.activeElement !== searchInput) {
-        e.preventDefault();
-        searchInput.focus();
-      }
-    });
-  }
 })(window.MarketLens);

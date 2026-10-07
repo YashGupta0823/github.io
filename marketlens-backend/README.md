@@ -2,7 +2,8 @@
 
 Flask backend for [MarketLens](../marketlens/). It serves live prediction-market data from
 [Kalshi's public market-data API](https://docs.kalshi.com) to the static frontend on GitHub Pages.
-It is read-only: no trading, no Kalshi login, no API keys.
+It is read-only: no trading and no Kalshi login. The only secret is an optional Google Gemini
+API key for the AI Market Brief.
 
 ## Endpoints
 
@@ -14,6 +15,7 @@ It is read-only: no trading, no Kalshi login, no API keys.
 | `GET /api/markets/<ticker>/history?range=1d\|7d\|30d\|90d` | Real probability history from Kalshi candlesticks, plus change/high/low/volatility |
 | `GET /api/markets/<ticker>/orderbook?depth=` | Top of the order book in YES terms |
 | `GET /api/movers?limit=` | Biggest gainers, losers, absolute movers, 24h volume leaders, most volatile |
+| `POST /api/markets/<ticker>/brief` | AI Market Brief from Gemini (`gemini-flash-latest`): `{ticker, brief, generated_at, model}` |
 
 ## How the numbers are computed
 
@@ -27,7 +29,25 @@ It is read-only: no trading, no Kalshi login, no API keys.
   (`services/analytics.py`). For the movers list, this is computed for the 50 most active markets
   using a single batch candlestick request.
 
-All analytics are plain arithmetic. No AI is involved.
+All analytics are plain arithmetic. No AI is involved in any of them.
+
+## AI Market Brief
+
+`POST /api/markets/<ticker>/brief` computes the market's facts in Python
+(`analytics.brief_facts`): probability, bid/ask, 24h and 7-day change, 7-day high/low, trend,
+position in range, volatility, volumes, open interest, volume rank, close date and resolution
+rules. Facts with no data are left out. Gemini is told not to recalculate or add numbers, not to
+guess why the market moved, and not to give financial advice; it only puts the facts into a few
+sentences (`services/ai_service.py`).
+
+- The key comes from the `GEMINI_API_KEY` environment variable, read on the server when a brief is
+  requested, and is sent only in the `X-goog-api-key` header. It is never logged or returned.
+  Without it, the endpoint returns `503 {"error": "AI Market Brief is not configured."}` and
+  everything else keeps working. `/api/health` reports `ai_brief_configured: true/false`.
+- One Gemini call per click, a 30s timeout, and no retries. Failures return
+  `502 {"error": "Market Brief is temporarily unavailable."}`.
+- Each visitor can request 8 briefs per hour, and the server caps all visitors at 100 per hour
+  combined, to protect the Gemini quota.
 
 ## Which markets
 
@@ -53,10 +73,13 @@ python app.py           # http://127.0.0.1:5001
 ```
 
 Then serve the frontend from the repo root with `python3 -m http.server 8000 --directory marketlens`
-and open http://localhost:8000. When the page runs on localhost, it calls the local API automatically.
+and open http://localhost:8000/?api=http://127.0.0.1:5001 to point the page at the local API
+(the `?api=` override only works on localhost; without it the page uses the production API).
+To try AI briefs locally, export `GEMINI_API_KEY` in your shell before `python app.py`.
 
 ## Deploy on Render
 
 Create a Web Service with Root Directory `marketlens-backend`, Build Command
-`pip install -r requirements.txt`, and Start Command `gunicorn app:app`. Then paste the service URL
-into `PRODUCTION_API_URL` in `marketlens/js/api.js`.
+`pip install -r requirements.txt`, and Start Command `gunicorn app:app` (`gunicorn.conf.py` is
+picked up automatically). Paste the service URL into `PRODUCTION_API_URL` in
+`marketlens/js/api.js`. To enable AI briefs, add `GEMINI_API_KEY` under Environment.
