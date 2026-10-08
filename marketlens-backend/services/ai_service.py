@@ -11,6 +11,7 @@ a log line, or a response to the browser.
 
 import logging
 import os
+import time
 
 import requests
 
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 
 MODEL = "gemini-flash-latest"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
-TIMEOUT_SECONDS = 30  # one attempt only; a failed brief can be retried from the page
+TIMEOUT_SECONDS = 60  # one attempt only; a failed brief can be retried from the page
 
 INSTRUCTIONS = """You are generating a concise MarketLens market brief.
 
@@ -38,7 +39,15 @@ class BriefNotConfigured(Exception):
 
 
 class BriefUnavailable(Exception):
-    """Gemini failed or returned no usable text."""
+    """Gemini failed or returned no usable text.
+
+    `reason` is a short, safe code (e.g. "timeout", "http_400 INVALID_ARGUMENT") that
+    contains no key or prompt content, so it can be shown in API responses and logs.
+    """
+
+    def __init__(self, reason):
+        super().__init__(reason)
+        self.reason = reason
 
 
 def is_configured():
@@ -67,6 +76,11 @@ def generate_market_brief(facts):
     if not api_key:
         raise BriefNotConfigured()
 
+    started = time.monotonic()
+
+    def elapsed():
+        return f"{time.monotonic() - started:.1f}s"
+
     try:
         response = requests.post(
             GEMINI_URL,
@@ -74,20 +88,30 @@ def generate_market_brief(facts):
             json={"contents": [{"parts": [{"text": build_prompt(facts)}]}]},
             timeout=TIMEOUT_SECONDS,
         )
+    except requests.Timeout:
+        log.warning("Gemini timed out after %s", elapsed())
+        raise BriefUnavailable(f"timeout after {elapsed()}") from None
     except requests.RequestException as exc:
         # Only the exception type is logged: the message could echo request details.
-        log.warning("Gemini request failed: %s", type(exc).__name__)
-        raise BriefUnavailable() from None
+        log.warning("Gemini request failed after %s: %s", elapsed(), type(exc).__name__)
+        raise BriefUnavailable(f"network {type(exc).__name__}") from None
 
     if not response.ok:
-        log.warning("Gemini returned HTTP %s", response.status_code)
-        raise BriefUnavailable()
+        try:
+            error = response.json().get("error") or {}
+        except ValueError:
+            error = {}
+        # Google's error message describes the problem (bad model, bad field, quota),
+        # never the key; it's logged but only the status codes go back to the browser.
+        log.warning("Gemini returned HTTP %s %s after %s: %s", response.status_code,
+                    error.get("status", ""), elapsed(), str(error.get("message", ""))[:300])
+        raise BriefUnavailable(f"http_{response.status_code} {error.get('status', '')}".strip())
 
     try:
         data = response.json()
     except ValueError:
         log.warning("Gemini returned invalid JSON")
-        raise BriefUnavailable() from None
+        raise BriefUnavailable("invalid_json") from None
 
     text = _extract_text(data)
     if not text:
@@ -95,5 +119,6 @@ def generate_market_brief(facts):
             (data.get("candidates") or [{}])[0].get("finishReason")
         )
         log.warning("Gemini returned no text (reason: %s)", reason)
-        raise BriefUnavailable()
+        raise BriefUnavailable(f"no_text {reason}")
+    log.info("Gemini brief generated in %s", elapsed())
     return text

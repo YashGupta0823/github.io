@@ -304,8 +304,8 @@ def market_brief(ticker):
         brief = ai_service.generate_market_brief(facts)
     except BriefNotConfigured:
         return _error(503, "AI Market Brief is not configured.")
-    except BriefUnavailable:
-        return _error(502, "Market Brief is temporarily unavailable.")
+    except BriefUnavailable as exc:
+        return jsonify({"error": "Market Brief is temporarily unavailable.", "reason": exc.reason}), 502
 
     return jsonify({
         "ticker": ticker,
