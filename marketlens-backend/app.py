@@ -301,7 +301,7 @@ def market_brief(ticker):
 
     facts = analytics.brief_facts(market, stats, volume_rank, tracked_count)
     try:
-        brief = ai_service.generate_market_brief(facts)
+        brief, model = ai_service.generate_market_brief(facts)
     except BriefNotConfigured:
         return _error(503, "AI Market Brief is not configured.")
     except BriefUnavailable as exc:
@@ -311,7 +311,7 @@ def market_brief(ticker):
         "ticker": ticker,
         "brief": brief,
         "generated_at": _iso(time.time()),
-        "model": ai_service.MODEL,
+        "model": model,
     })
 
 
